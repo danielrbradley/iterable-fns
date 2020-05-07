@@ -5,7 +5,7 @@
 [![TypeDoc docs](https://img.shields.io/badge/TypeDoc-docs-lightgrey.svg)](https://www.danielbradley.net/iterable-fns/)
 [![Travis](https://img.shields.io/travis/danielrbradley/iterable-fns.svg)](https://travis-ci.org/danielrbradley/iterable-fns)
 [![Coveralls](https://img.shields.io/coveralls/danielrbradley/iterable-fns.svg)](https://coveralls.io/github/danielrbradley/iterable-fns)
-[![Dev Dependencies](https://david-dm.org/danielrbradley/iterable-fns/dev-status.svg)](https://david-dm.org/danielrbradley/iterable-fns?type=dev) [![Greenkeeper badge](https://badges.greenkeeper.io/danielrbradley/iterable-fns.svg)](https://greenkeeper.io/)
+[![Dev Dependencies](https://david-dm.org/danielrbradley/iterable-fns/dev-status.svg)](https://david-dm.org/danielrbradley/iterable-fns?type=dev) 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Really simple functions for working with iterable types, inspired by F#'s seq module design.
