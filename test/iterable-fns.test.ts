@@ -1,5 +1,4 @@
 import * as Iterables from '../src/iterable-fns'
-import { init } from '../src/iterable-fns'
 
 describe('toArray', () => {
   it('constructs an array', () => {
@@ -124,30 +123,31 @@ describe('initInfinite', () => {
 
 describe('map', () => {
   it('maps empty collection', () => {
-    expect(Array.from(Iterables.map(init(0), (x) => x))).toEqual([])
+    expect(Array.from(Iterables.map(Iterables.init(0), (x) => x))).toEqual([])
   })
   it('maps items without partial application', () => {
-    expect(Array.from(Iterables.map(init({ start: 1, count: 2 }), (x) => x * 2))).toEqual([2, 4])
+    expect(
+      Array.from(Iterables.map(Iterables.init({ start: 1, count: 2 }), (x) => x * 2))
+    ).toEqual([2, 4])
   })
   it('can map with index', () => {
-    expect(Array.from(Iterables.map(init({ start: 1, count: 2 }), (x, index) => index))).toEqual([
-      0,
-      1,
-    ])
+    expect(
+      Array.from(Iterables.map(Iterables.init({ start: 1, count: 2 }), (x, index) => index))
+    ).toEqual([0, 1])
   })
 })
 
 describe('filter', () => {
   it('can filter empty collection', () => {
-    expect(Array.from(Iterables.filter(init(0), (x) => true))).toEqual([])
+    expect(Array.from(Iterables.filter(Iterables.init(0), (x) => true))).toEqual([])
   })
   it('can filter out everything', () => {
-    expect(Array.from(Iterables.filter(init(2), (x) => false))).toEqual([])
+    expect(Array.from(Iterables.filter(Iterables.init(2), (x) => false))).toEqual([])
   })
   it('can filters based on criteria', () => {
-    expect(Array.from(Iterables.filter(init({ start: 1, count: 2 }), (x) => x % 2 === 0))).toEqual([
-      2,
-    ])
+    expect(
+      Array.from(Iterables.filter(Iterables.init({ start: 1, count: 2 }), (x) => x % 2 === 0))
+    ).toEqual([2])
   })
   it('can filters based on index', () => {
     function* source() {
@@ -700,7 +700,7 @@ describe('sortByDescending', () => {
 
 describe('reverse', () => {
   test('empty iterable', () => {
-    expect(Array.from(Iterables.reverse(init(0)))).toEqual([])
+    expect(Array.from(Iterables.reverse(Iterables.init(0)))).toEqual([])
   })
   test('reversal', () => {
     expect(Array.from(Iterables.reverse([8, 3, 5]))).toEqual([5, 3, 8])
