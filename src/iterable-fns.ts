@@ -237,6 +237,24 @@ export function groupBy<T, Key>(
   return groups.entries()
 }
 
+/**
+ * Returns an interable of each element in the input sequence and its predecessor,
+ * with the exception of the first element which is only returned as the predecessor of the second element.
+ * @param source The input collection
+ */
+export function* pairwise<T>(source: Iterable<T>): Iterable<[T, T]> {
+  let prev: T | undefined = undefined
+  let started = false
+  for (const item of source) {
+    if (!started) {
+      started = true
+    } else {
+      yield [prev!, item]
+    }
+    prev = item
+  }
+}
+
 export interface InitRange {
   from: number
   to: number
@@ -691,6 +709,14 @@ export class ChainableIterable<T> implements Iterable<T> {
    */
   groupBy<Key>(selector: (item: T, index: number) => Key): ChainableIterable<[Key, Iterable<T>]> {
     return new ChainableIterable(groupBy(this.source, selector))
+  }
+
+  /**
+   * Returns an interable of each element in the input sequence and its predecessor,
+   * with the exception of the first element which is only returned as the predecessor of the second element.
+   */
+  pairwise(): ChainableIterable<[T, T]> {
+    return new ChainableIterable(pairwise(this.source))
   }
 
   /**
