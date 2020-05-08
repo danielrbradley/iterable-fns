@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { meanBy } from '../src/iterable-fns'
 
-it('finds mean age', () => {
+test('finds mean age', () => {
   expect(
-    Iterables.meanBy(
+    meanBy(
       (function* () {
         yield { name: 'amy', age: 21 }
         yield { name: 'bob', age: 2 }
@@ -14,6 +14,6 @@ it('finds mean age', () => {
   ).toEqual(20)
 })
 
-it('fails on empty collection', () => {
-  expect(() => Iterables.meanBy([], (x) => x)).toThrow(`Can't find mean of an empty collection`)
+test('fails on empty collection', () => {
+  expect(() => meanBy([], (x) => x)).toThrow(`Can't find mean of an empty collection`)
 })

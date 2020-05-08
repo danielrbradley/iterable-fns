@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { max } from '../src/iterable-fns'
 
-it('finds max', () => {
+test('finds max', () => {
   expect(
-    Iterables.max(
+    max(
       (function* () {
         yield 2
         yield 21
@@ -12,6 +12,6 @@ it('finds max', () => {
   ).toEqual(21)
 })
 
-it('fails on empty collection', () => {
-  expect(() => Iterables.max([])).toThrow(`Can't find max of an empty collection`)
+test('fails on empty collection', () => {
+  expect(() => max([])).toThrow(`Can't find max of an empty collection`)
 })

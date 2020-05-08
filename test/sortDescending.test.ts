@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { sortDescending } from '../src/iterable-fns'
 
 test('numbers', () => {
   expect(
     Array.from(
-      Iterables.sortDescending(
+      sortDescending(
         (function* () {
           yield 21
           yield 2
@@ -17,7 +17,7 @@ test('numbers', () => {
 test('strings', () => {
   expect(
     Array.from(
-      Iterables.sortDescending(
+      sortDescending(
         (function* () {
           yield 'cat'
           yield 'amy'
@@ -31,7 +31,7 @@ test('strings', () => {
 test('with key selector', () => {
   expect(
     Array.from(
-      Iterables.sortDescending(
+      sortDescending(
         (function* () {
           yield { name: 'amy', age: 21 }
           yield { name: 'bob', age: 2 }

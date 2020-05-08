@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { sumBy } from '../src/iterable-fns'
 
 test('with value selector', () => {
   expect(
-    Iterables.sumBy(
+    sumBy(
       (function* () {
         yield { name: 'amy', age: 21 }
         yield { name: 'bob', age: 2 }

@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { exists } from '../src/iterable-fns'
 
-it('matches non-existance', () => {
+test('matches non-existance', () => {
   expect(
-    Iterables.exists(
+    exists(
       (function* (): Generator<number> {
         yield 1
         yield 2
@@ -12,9 +12,9 @@ it('matches non-existance', () => {
   ).toEqual(false)
 })
 
-it('matches existance', () => {
+test('matches existance', () => {
   expect(
-    Iterables.exists(
+    exists(
       (function* () {
         yield 1
         yield 2
@@ -24,9 +24,9 @@ it('matches existance', () => {
   ).toEqual(true)
 })
 
-it('passes index', () => {
+test('passes index', () => {
   expect(
-    Iterables.exists(
+    exists(
       (function* () {
         yield 1
         yield 2

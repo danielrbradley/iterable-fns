@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { groupBy } from '../src/iterable-fns'
 
-it('groups by key', () => {
+test('groups by key', () => {
   expect(
     Array.from(
-      Iterables.groupBy(
+      groupBy(
         (function* () {
           yield { name: 'amy', age: 1 }
           yield { name: 'bob', age: 2 }
@@ -24,10 +24,10 @@ it('groups by key', () => {
   ])
 })
 
-it('groups by index', () => {
+test('groups by index', () => {
   expect(
     Array.from(
-      Iterables.groupBy(
+      groupBy(
         (function* () {
           yield { name: 'amy', age: 1 }
           yield { name: 'bob', age: 2 }

@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { toArray } from '../src/iterable-fns'
 
-it('constructs an array', () => {
+test('constructs an array', () => {
   function* source() {
     yield 1
     yield 2
   }
-  expect(Iterables.toArray(source())).toEqual([1, 2])
+  expect(toArray(source())).toEqual([1, 2])
 })

@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { find } from '../src/iterable-fns'
 
-it('finds match', () => {
+test('finds match', () => {
   expect(
-    Iterables.find(
+    find(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }
@@ -12,9 +12,9 @@ it('finds match', () => {
   ).toEqual({ name: 'bob', id: 2 })
 })
 
-it('returns undefined when not found', () => {
+test('returns undefined when not found', () => {
   expect(
-    Iterables.find(
+    find(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }
@@ -24,9 +24,9 @@ it('returns undefined when not found', () => {
   ).toBeUndefined()
 })
 
-it('finds by index', () => {
+test('finds by index', () => {
   expect(
-    Iterables.find(
+    find(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }

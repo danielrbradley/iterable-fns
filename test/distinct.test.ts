@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { distinct } from '../src/iterable-fns'
 
-it('ignores duplicates', () => {
+test('duplicates', () => {
   expect(
     Array.from(
-      Iterables.distinct(
+      distinct(
         (function* () {
           yield 'bob'
           yield 'cat'

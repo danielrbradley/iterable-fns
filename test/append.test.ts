@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { append } from '../src/iterable-fns'
 
-it('appends two iterators', () => {
+test('appends two iterators', () => {
   expect(
     Array.from(
-      Iterables.append(
+      append(
         (function* () {
           yield 1
         })(),

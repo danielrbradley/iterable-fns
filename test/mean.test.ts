@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { mean } from '../src/iterable-fns'
 
-it('finds mean', () => {
+test('finds mean', () => {
   expect(
-    Iterables.mean(
+    mean(
       (function* () {
         yield 21
         yield 2
@@ -13,6 +13,6 @@ it('finds mean', () => {
   ).toEqual(20)
 })
 
-it('fails on empty collection', () => {
-  expect(() => Iterables.mean([])).toThrow(`Can't find mean of an empty collection`)
+test('fails on empty collection', () => {
+  expect(() => mean([])).toThrow(`Can't find mean of an empty collection`)
 })

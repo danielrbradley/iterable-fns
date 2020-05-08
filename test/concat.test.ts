@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { concat } from '../src/iterable-fns'
 
-it('appends nested iterators', () => {
+test('nested iterators', () => {
   expect(
     Array.from(
-      Iterables.concat(
+      concat(
         (function* () {
           yield (function* () {
             yield 1

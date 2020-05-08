@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { distinctBy } from '../src/iterable-fns'
 
-it('ignores duplicates without partial application', () => {
+test('ignores duplicates without partial application', () => {
   expect(
     Array.from(
-      Iterables.distinctBy(
+      distinctBy(
         (function* () {
           yield { name: 'amy', id: 1 }
           yield { name: 'bob', id: 2 }
@@ -20,10 +20,10 @@ it('ignores duplicates without partial application', () => {
   ])
 })
 
-it('passes index', () => {
+test('using index', () => {
   expect(
     Array.from(
-      Iterables.distinctBy(
+      distinctBy(
         (function* () {
           yield { name: 'amy', id: 1 }
           yield { name: 'bob', id: 2 }

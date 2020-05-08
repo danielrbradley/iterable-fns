@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { sum } from '../src/iterable-fns'
 
 test('numbers', () => {
   expect(
-    Iterables.sum(
+    sum(
       (function* () {
         yield 21
         yield 2

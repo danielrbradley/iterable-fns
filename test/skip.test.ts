@@ -1,9 +1,9 @@
-import * as Iterables from '../src/iterable-fns'
+import { skip } from '../src/iterable-fns'
 
 test('skipping none', () => {
   expect(
     Array.from(
-      Iterables.skip(
+      skip(
         (function* () {
           yield 1
           yield 2
@@ -19,7 +19,7 @@ test('skipping none', () => {
 test('skipping some', () => {
   expect(
     Array.from(
-      Iterables.skip(
+      skip(
         (function* () {
           yield 1
           yield 2
@@ -35,7 +35,7 @@ test('skipping some', () => {
 test('skipping all', () => {
   expect(
     Array.from(
-      Iterables.skip(
+      skip(
         (function* () {
           yield 1
           yield 2
@@ -51,7 +51,7 @@ test('skipping all', () => {
 test('skipping more than count', () => {
   expect(
     Array.from(
-      Iterables.skip(
+      skip(
         (function* () {
           yield 1
           yield 2

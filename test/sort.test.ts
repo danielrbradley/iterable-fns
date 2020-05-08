@@ -1,13 +1,13 @@
-import * as Iterables from '../src/iterable-fns'
+import { sort } from '../src/iterable-fns'
 
 test('numbers', () => {
-  expect(Array.from(Iterables.sort([21, 2, 18]))).toEqual([2, 18, 21])
+  expect(Array.from(sort([21, 2, 18]))).toEqual([2, 18, 21])
 })
 
 test('strings', () => {
   expect(
     Array.from(
-      Iterables.sort(
+      sort(
         (function* () {
           yield 'cat'
           yield 'amy'
@@ -21,7 +21,7 @@ test('strings', () => {
 test('with key selector', () => {
   expect(
     Array.from(
-      Iterables.sort(
+      sort(
         (function* () {
           yield { name: 'amy', age: 21 }
           yield { name: 'bob', age: 2 }

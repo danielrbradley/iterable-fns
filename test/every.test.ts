@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { every } from '../src/iterable-fns'
 
-it('matches existance', () => {
+test('matches existance', () => {
   expect(
-    Iterables.every(
+    every(
       (function* () {
         yield 2
         yield 4
@@ -12,9 +12,9 @@ it('matches existance', () => {
   ).toEqual(true)
 })
 
-it('matches non-existance', () => {
+test('matches non-existance', () => {
   expect(
-    Iterables.every(
+    every(
       (function* () {
         yield 1
         yield 2
@@ -24,9 +24,9 @@ it('matches non-existance', () => {
   ).toEqual(false)
 })
 
-it('passes index', () => {
+test('passes index', () => {
   expect(
-    Iterables.every(
+    every(
       (function* () {
         yield 1
         yield 2

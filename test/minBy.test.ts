@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { minBy } from '../src/iterable-fns'
 
-it('finds min age', () => {
+test('finds min age', () => {
   expect(
-    Iterables.minBy(
+    minBy(
       (function* () {
         yield { name: 'amy', age: 21 }
         yield { name: 'bob', age: 2 }
@@ -13,6 +13,6 @@ it('finds min age', () => {
   ).toEqual(2)
 })
 
-it('fails on empty collection', () => {
-  expect(() => Iterables.minBy([], (x) => x)).toThrow(`Can't find min of an empty collection`)
+test('fails on empty collection', () => {
+  expect(() => minBy([], (x) => x)).toThrow(`Can't find min of an empty collection`)
 })

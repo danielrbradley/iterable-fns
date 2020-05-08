@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { get } from '../src/iterable-fns'
 
-it('finds match', () => {
+test('finds match', () => {
   expect(
-    Iterables.get(
+    get(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }
@@ -12,9 +12,9 @@ it('finds match', () => {
   ).toEqual({ name: 'bob', id: 2 })
 })
 
-it('throws when not found', () => {
+test('throws when not found', () => {
   expect(() =>
-    Iterables.get(
+    get(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }
@@ -24,9 +24,9 @@ it('throws when not found', () => {
   ).toThrow('Element not found matching criteria')
 })
 
-it('finds by index', () => {
+test('finds by index', () => {
   expect(
-    Iterables.get(
+    get(
       (function* () {
         yield { name: 'amy', id: 1 }
         yield { name: 'bob', id: 2 }

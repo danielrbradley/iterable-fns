@@ -1,5 +1,5 @@
-import * as Iterables from '../src/iterable-fns'
+import { take, initInfinite } from '../src/iterable-fns'
 
 test('taking some', () => {
-  expect(Array.from(Iterables.take(Iterables.initInfinite(), 3))).toEqual([0, 1, 2])
+  expect(Array.from(take(initInfinite(), 3))).toEqual([0, 1, 2])
 })

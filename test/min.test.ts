@@ -1,8 +1,8 @@
-import * as Iterables from '../src/iterable-fns'
+import { min } from '../src/iterable-fns'
 
-it('finds min', () => {
+test('finds min', () => {
   expect(
-    Iterables.min(
+    min(
       (function* () {
         yield 21
         yield 2
@@ -12,6 +12,6 @@ it('finds min', () => {
   ).toEqual(2)
 })
 
-it('fails on empty collection', () => {
-  expect(() => Iterables.min([])).toThrow(`Can't find min of an empty collection`)
+test('fails on empty collection', () => {
+  expect(() => min([])).toThrow(`Can't find min of an empty collection`)
 })
