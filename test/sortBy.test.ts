@@ -1,4 +1,4 @@
-import { sortBy } from '../src/iterable-fns'
+import { sortBy, chain } from '../src/iterable-fns'
 
 test('sorts by selected key', () => {
   expect(
@@ -12,6 +12,24 @@ test('sorts by selected key', () => {
         (x) => x.age
       )
     )
+  ).toEqual([
+    { name: 'bob', age: 2 },
+    { name: 'cat', age: 18 },
+    { name: 'amy', age: 21 },
+  ])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield { name: 'amy', age: 21 }
+        yield { name: 'bob', age: 2 }
+        yield { name: 'cat', age: 18 }
+      })()
+    )
+      .sortBy((x) => x.age)
+      .toArray()
   ).toEqual([
     { name: 'bob', age: 2 },
     { name: 'cat', age: 18 },

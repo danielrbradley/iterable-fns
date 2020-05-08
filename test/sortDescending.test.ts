@@ -1,4 +1,4 @@
-import { sortDescending } from '../src/iterable-fns'
+import { sortDescending, chain } from '../src/iterable-fns'
 
 test('numbers', () => {
   expect(
@@ -45,4 +45,18 @@ test('with key selector', () => {
     { name: 'cat', age: 18 },
     { name: 'bob', age: 2 },
   ])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 'cat'
+        yield 'amy'
+        yield 'bob'
+      })()
+    )
+      .sortDescending()
+      .toArray()
+  ).toEqual(['cat', 'bob', 'amy'])
 })

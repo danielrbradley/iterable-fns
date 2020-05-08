@@ -1,4 +1,4 @@
-import { find } from '../src/iterable-fns'
+import { find, chain } from '../src/iterable-fns'
 
 test('finds match', () => {
   expect(
@@ -33,5 +33,16 @@ test('finds by index', () => {
       })(),
       (x, index) => index === 1
     )
+  ).toEqual({ name: 'bob', id: 2 })
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield { name: 'amy', id: 1 }
+        yield { name: 'bob', id: 2 }
+      })()
+    ).find((x) => x.name === 'bob')
   ).toEqual({ name: 'bob', id: 2 })
 })

@@ -1,4 +1,4 @@
-import { collect } from '../src/iterable-fns'
+import { collect, chain } from '../src/iterable-fns'
 
 test('collect iterables', () => {
   expect(
@@ -20,4 +20,15 @@ test('with index', () => {
       })
     )
   ).toEqual([1, 1, 2, 3])
+})
+
+test('chaining', () => {
+  expect(
+    chain([1, 2])
+      .collect(function* (x) {
+        yield x
+        yield x
+      })
+      .toArray()
+  ).toEqual([1, 1, 2, 2])
 })

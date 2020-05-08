@@ -1,4 +1,4 @@
-import { sumBy } from '../src/iterable-fns'
+import { sumBy, chain } from '../src/iterable-fns'
 
 test('with value selector', () => {
   expect(
@@ -10,5 +10,17 @@ test('with value selector', () => {
       })(),
       (x) => x.age
     )
+  ).toEqual(41)
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield { name: 'amy', age: 21 }
+        yield { name: 'bob', age: 2 }
+        yield { name: 'cat', age: 18 }
+      })()
+    ).sumBy((x) => x.age)
   ).toEqual(41)
 })

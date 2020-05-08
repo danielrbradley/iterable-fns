@@ -255,7 +255,7 @@ export interface InitCount {
  * @throws When the options would result in a sequence that would not complete. If this is the
  * desired behaviour, use initInfinite.
  */
-export function* init(options: number | InitRange | InitCount): Iterable<number> {
+export function* initRaw(options: number | InitRange | InitCount): Iterable<number> {
   function normaliseOptions() {
     if (typeof options === 'number') {
       return {
@@ -300,7 +300,10 @@ export function* init(options: number | InitRange | InitCount): Iterable<number>
  * Generates a new iterable which, when iterated, will return the specified number sequence.
  * @param options The sequence of numbers to generate.
  */
-export function* initInfinite(options?: { start?: number; increment?: number }): Iterable<number> {
+export function* initInfiniteRaw(options?: {
+  start?: number
+  increment?: number
+}): Iterable<number> {
   const start = options !== undefined && options.start !== undefined ? options.start : 0
   const increment = options !== undefined && options.increment !== undefined ? options.increment : 1
   for (let index = start; true; index += increment) {
@@ -570,4 +573,254 @@ export function meanBy<T>(source: Iterable<T>, selector: (item: T) => number): n
     throw new Error(`Can't find mean of an empty collection`)
   }
   return sum / count
+}
+
+export class ChainableIterable<T> implements Iterable<T> {
+  private source: Iterable<T>
+  constructor(source: Iterable<T>) {
+    this.source = source
+  }
+
+  [Symbol.iterator](): Iterator<T, any, undefined> {
+    return this.source[Symbol.iterator]()
+  }
+
+  /**
+   * Creates an array from the source iterable object.
+   */
+  toArray(): T[] {
+    return toArray(this.source)
+  }
+
+  /**
+   * Creates a new iterable whose elements are the results of applying the specified mapping to each of the elements of the source collection.
+   * @param mapping A function to transform items from the input collection.
+   */
+  map<U>(mapping: (item: T, index: number) => U): ChainableIterable<U> {
+    return new ChainableIterable(map(this.source, mapping))
+  }
+
+  /**
+   * Returns a new iterable containing only the elements of the collection for which the given predicate returns true.
+   * @param predicate A function to test whether each item in the input collection should be included in the output.
+   */
+  filter(predicate: (item: T, index: number) => boolean): ChainableIterable<T> {
+    return new ChainableIterable(filter(this.source, predicate))
+  }
+
+  /**
+   * Applies the given function to each element of the sequence and returns a new sequence comprised of the results for each element where the function returns a value.
+   * @param chooser A function to transform items from the input collection to a new value to be included, or undefined to be excluded.
+   */
+  choose<U>(chooser: (item: T, index: number) => U | undefined): ChainableIterable<U> {
+    return new ChainableIterable(choose(this.source, chooser))
+  }
+
+  /**
+   * Applies the given function to each element of the source iterable and concatenates all the results.
+   * @param mapping A function to transform elements of the input collection into collections that are concatenated.
+   */
+  collect<U>(mapping: (item: T, index: number) => Iterable<U>): ChainableIterable<U> {
+    return new ChainableIterable(collect(this.source, mapping))
+  }
+
+  /**
+   * Wraps the two given iterables as a single concatenated iterable.
+   * @param second The second iterable.
+   */
+  append(second: Iterable<T>): ChainableIterable<T> {
+    return new ChainableIterable(append(this.source, second))
+  }
+
+  /**
+   * Returns a iterable that contains no duplicate entries according to the equality comparisons on
+   * the elements. If an element occurs multiple times in the sequence then the later occurrences are
+   * discarded.
+   */
+  distinct(): ChainableIterable<T> {
+    return new ChainableIterable(distinct(this.source))
+  }
+
+  /**
+   * Returns a iterable that contains no duplicate entries according to the equality comparisons on
+   * the keys returned by the given key-generating function. If an element occurs multiple times in
+   * the sequence then the later occurrences are discarded.
+   * @param selector A function that transforms the collection items into comparable keys.
+   */
+  distinctBy<Key>(selector: (item: T, index: number) => Key): ChainableIterable<T> {
+    return new ChainableIterable(distinctBy(this.source, selector))
+  }
+
+  /**
+   * Tests if any element of the collection satisfies the given predicate.
+   * @param predicate A function to test each item of the input collection.
+   */
+  exists(predicate: (item: T, index: number) => boolean): boolean {
+    return exists(this.source, predicate)
+  }
+
+  /**
+   * Tests if every element of the collection satisfies the given predicate.
+   * @param predicate A function to test against each item of the input collection.
+   */
+  every(predicate: (item: T, index: number) => boolean): boolean {
+    return every(this.source, predicate)
+  }
+
+  /**
+   * Returns the first element for which the given function returns true.
+   * @param predicate A function to test whether an item in the collection should be returned.
+   * @throws If no item is found matching the criteria of the predicate.
+   */
+  get(predicate: (item: T, index: number) => boolean): T {
+    return get(this.source, predicate)
+  }
+
+  /**
+   * Returns the first element for which the given function returns true, otherwise undefined.
+   * @param predicate A function to test whether an item in the collection should be returned.
+   */
+  find(predicate: (item: T, index: number) => boolean): T | undefined {
+    return find(this.source, predicate)
+  }
+
+  /**
+   * Applies a key-generating function to each element of a collection and yields a iterable of unique
+   * keys and an array of all elements that have each key.
+   * @param selector A function that transforms an element of the collection into a comparable key.
+   */
+  groupBy<Key>(selector: (item: T, index: number) => Key): ChainableIterable<[Key, Iterable<T>]> {
+    return new ChainableIterable(groupBy(this.source, selector))
+  }
+
+  /**
+   * Returns the elements of the iterable after a specified count.
+   * @param count The number of items to skip.
+   */
+  skip(count: number): ChainableIterable<T> {
+    return new ChainableIterable(skip(this.source, count))
+  }
+
+  /**
+   * Returns the elements of the iterable up to a specified count.
+   * @param count The number of items to take.
+   */
+  take(count: number): ChainableIterable<T> {
+    return new ChainableIterable(take(this.source, count))
+  }
+
+  /**
+   * Returns the number of items in the collection.
+   */
+  count(): number {
+    return count(this.source)
+  }
+
+  /**
+   * Returns the number of items in the collection.
+   */
+  length(): number {
+    return count(this.source)
+  }
+
+  /**
+   * Yields an iterable ordered by the selected key.
+   * If no selector is specified, the elements will be compared directly.
+   * @param selector An optional function to transform items of the input sequence into comparable keys.
+   */
+  sort<Key>(selector?: (item: T) => Key): ChainableIterable<T> {
+    return new ChainableIterable(sort(this.source, selector))
+  }
+
+  /**
+   * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys.
+   * @param selector A function to transform items of the input sequence into comparable keys.
+   */
+  sortBy<Key>(selector: (item: T) => Key): ChainableIterable<T> {
+    return new ChainableIterable(sortBy(this.source, selector))
+  }
+
+  /**
+   * Yields an iterable ordered by the selected key descending.
+   * If no selector is specified, the elements will be compared directly.
+   * @param selector An optional function to transform items of the input sequence into comparable keys.
+   */
+  sortDescending<Key>(selector?: (item: T) => Key): ChainableIterable<T> {
+    return new ChainableIterable(sortDescending(this.source, selector))
+  }
+
+  /**
+   * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys, descending.
+   * @param selector A function to transform items of the input sequence into comparable keys.
+   */
+  sortByDescending<Key>(selector: (item: T) => Key): ChainableIterable<T> {
+    return new ChainableIterable(sortByDescending(this.source, selector))
+  }
+
+  /**
+   * Yields each element of the iterable in reverse order.
+   */
+  reverse(): ChainableIterable<T> {
+    return new ChainableIterable(reverse(this.source))
+  }
+
+  /**
+   * Returns the sum of the values returned by the selector for each element in the collection.
+   * @param selector A function to transform each element into a summable value.
+   */
+  sumBy(selector: (item: T) => number): number {
+    return sumBy(this.source, selector)
+  }
+
+  /**
+   * Returns the maximum of the values returned by the selector for each element in the collection.
+   * @param selector A function to transform each element into a comparable value.
+   * @throws If the collection is empty.
+   */
+  maxBy(selector: (item: T) => number): number {
+    return maxBy(this.source, selector)
+  }
+
+  /**
+   * Returns the minimum of the values returned by the selector for each element in the collection.
+   * @param selector A function to transform each element into a comparable value.
+   * @throws If the collection is empty.
+   */
+  minBy(selector: (item: T) => number): number {
+    return minBy(this.source, selector)
+  }
+
+  /**
+   * Returns the mean (average) of the values returned by the selector for each element in the collection.
+   * @param selector A function to transform each element into a summable value.
+   * @throws If the collection is empty.
+   */
+  meanBy(selector: (item: T) => number): number {
+    return meanBy(this.source, selector)
+  }
+}
+
+/**
+ * Generates a new iterable which, when iterated, will return the specified number sequence.
+ * @param options The sequence of numbers to generate.
+ * @throws When the options would result in a sequence that would not complete. If this is the
+ * desired behaviour, use initInfinite.
+ */
+export function init(options: number | InitRange | InitCount): ChainableIterable<number> {
+  return new ChainableIterable(initRaw(options))
+}
+
+/**
+ * Generates a new iterable which, when iterated, will return the specified number sequence.
+ * @param options The sequence of numbers to generate.
+ */
+export function initInfinite(options?: {
+  start?: number
+  increment?: number
+}): ChainableIterable<number> {
+  return new ChainableIterable(initInfiniteRaw(options))
+}
+
+export function chain<T>(source: Iterable<T>): ChainableIterable<T> {
+  return new ChainableIterable(source)
 }

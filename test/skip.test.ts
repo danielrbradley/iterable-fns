@@ -1,4 +1,4 @@
-import { skip } from '../src/iterable-fns'
+import { skip, chain } from '../src/iterable-fns'
 
 test('skipping none', () => {
   expect(
@@ -62,4 +62,19 @@ test('skipping more than count', () => {
       )
     )
   ).toEqual([])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 1
+        yield 2
+        yield 3
+        yield 4
+      })()
+    )
+      .skip(2)
+      .toArray()
+  ).toEqual([3, 4])
 })

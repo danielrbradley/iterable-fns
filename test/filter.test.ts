@@ -21,3 +21,11 @@ test('can filters based on index', () => {
   }
   expect(Array.from(filter(source(), (x, index) => index % 2 === 0))).toEqual([1, 15])
 })
+
+test('chaining', () => {
+  expect(
+    init({ start: 1, count: 2 })
+      .filter((x) => x % 2 === 0)
+      .toArray()
+  ).toEqual([2])
+})

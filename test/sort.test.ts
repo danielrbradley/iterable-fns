@@ -1,4 +1,4 @@
-import { sort } from '../src/iterable-fns'
+import { sort, chain } from '../src/iterable-fns'
 
 test('numbers', () => {
   expect(Array.from(sort([21, 2, 18]))).toEqual([2, 18, 21])
@@ -35,4 +35,18 @@ test('with key selector', () => {
     { name: 'cat', age: 18 },
     { name: 'amy', age: 21 },
   ])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 'cat'
+        yield 'amy'
+        yield 'bob'
+      })()
+    )
+      .sort()
+      .toArray()
+  ).toEqual(['amy', 'bob', 'cat'])
 })

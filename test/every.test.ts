@@ -1,4 +1,4 @@
-import { every } from '../src/iterable-fns'
+import { every, chain } from '../src/iterable-fns'
 
 test('matches existance', () => {
   expect(
@@ -33,5 +33,16 @@ test('passes index', () => {
       })(),
       (x, index) => index < 2
     )
+  ).toEqual(true)
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 2
+        yield 4
+      })()
+    ).every((x) => x % 2 === 0)
   ).toEqual(true)
 })

@@ -1,4 +1,4 @@
-import { distinct } from '../src/iterable-fns'
+import { distinct, chain } from '../src/iterable-fns'
 
 test('duplicates', () => {
   expect(
@@ -12,5 +12,20 @@ test('duplicates', () => {
         })()
       )
     )
+  ).toEqual(['bob', 'cat', 'amy'])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 'bob'
+        yield 'cat'
+        yield 'bob'
+        yield 'amy'
+      })()
+    )
+      .distinct()
+      .toArray()
   ).toEqual(['bob', 'cat', 'amy'])
 })

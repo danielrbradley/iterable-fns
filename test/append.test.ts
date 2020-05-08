@@ -1,4 +1,4 @@
-import { append } from '../src/iterable-fns'
+import { append, chain } from '../src/iterable-fns'
 
 test('appends two iterators', () => {
   expect(
@@ -12,5 +12,21 @@ test('appends two iterators', () => {
         })()
       )
     )
+  ).toEqual([1, 2])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield 1
+      })()
+    )
+      .append(
+        (function* () {
+          yield 2
+        })()
+      )
+      .toArray()
   ).toEqual([1, 2])
 })

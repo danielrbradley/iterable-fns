@@ -1,4 +1,4 @@
-import { exists } from '../src/iterable-fns'
+import { exists, chain } from '../src/iterable-fns'
 
 test('matches non-existance', () => {
   expect(
@@ -34,4 +34,15 @@ test('passes index', () => {
       (x, index) => x === 2 && index === 1
     )
   ).toEqual(true)
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* (): Generator<number> {
+        yield 1
+        yield 2
+      })()
+    ).exists((x) => x === 3)
+  ).toEqual(false)
 })

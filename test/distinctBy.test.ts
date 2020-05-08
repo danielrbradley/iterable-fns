@@ -1,6 +1,6 @@
-import { distinctBy } from '../src/iterable-fns'
+import { distinctBy, chain } from '../src/iterable-fns'
 
-test('ignores duplicates without partial application', () => {
+test('ignores duplicates', () => {
   expect(
     Array.from(
       distinctBy(
@@ -36,5 +36,24 @@ test('using index', () => {
   ).toEqual([
     { name: 'amy', id: 1 },
     { name: 'bob', id: 3 },
+  ])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield { name: 'amy', id: 1 }
+        yield { name: 'bob', id: 2 }
+        yield { name: 'bob', id: 3 }
+        yield { name: 'cat', id: 3 }
+      })()
+    )
+      .distinctBy((x) => x.name)
+      .toArray()
+  ).toEqual([
+    { name: 'amy', id: 1 },
+    { name: 'bob', id: 2 },
+    { name: 'cat', id: 3 },
   ])
 })

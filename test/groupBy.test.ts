@@ -1,4 +1,4 @@
-import { groupBy } from '../src/iterable-fns'
+import { groupBy, chain } from '../src/iterable-fns'
 
 test('groups by key', () => {
   expect(
@@ -45,5 +45,28 @@ test('groups by index', () => {
       ],
     ],
     [1, [{ name: 'bob', age: 2 }]],
+  ])
+})
+
+test('chaining', () => {
+  expect(
+    chain(
+      (function* () {
+        yield { name: 'amy', age: 1 }
+        yield { name: 'bob', age: 2 }
+        yield { name: 'cat', age: 2 }
+      })()
+    )
+      .groupBy((x) => x.age)
+      .toArray()
+  ).toEqual([
+    [1, [{ name: 'amy', age: 1 }]],
+    [
+      2,
+      [
+        { name: 'bob', age: 2 },
+        { name: 'cat', age: 2 },
+      ],
+    ],
   ])
 })
