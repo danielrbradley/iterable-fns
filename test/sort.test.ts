@@ -1,0 +1,38 @@
+import * as Iterables from '../src/iterable-fns'
+
+describe('sort', () => {
+  test('numbers', () => {
+    expect(Array.from(Iterables.sort([21, 2, 18]))).toEqual([2, 18, 21])
+  })
+  test('strings', () => {
+    expect(
+      Array.from(
+        Iterables.sort(
+          (function* () {
+            yield 'cat'
+            yield 'amy'
+            yield 'bob'
+          })()
+        )
+      )
+    ).toEqual(['amy', 'bob', 'cat'])
+  })
+  test('with key selector', () => {
+    expect(
+      Array.from(
+        Iterables.sort(
+          (function* () {
+            yield { name: 'amy', age: 21 }
+            yield { name: 'bob', age: 2 }
+            yield { name: 'cat', age: 18 }
+          })(),
+          (x) => x.age
+        )
+      )
+    ).toEqual([
+      { name: 'bob', age: 2 },
+      { name: 'cat', age: 18 },
+      { name: 'amy', age: 21 },
+    ])
+  })
+})

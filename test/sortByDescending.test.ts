@@ -1,0 +1,22 @@
+import * as Iterables from '../src/iterable-fns'
+
+describe('sortByDescending', () => {
+  test('by selected key', () => {
+    expect(
+      Array.from(
+        Iterables.sortByDescending(
+          (function* () {
+            yield { name: 'amy', age: 21 }
+            yield { name: 'bob', age: 2 }
+            yield { name: 'cat', age: 18 }
+          })(),
+          (x) => x.age
+        )
+      )
+    ).toEqual([
+      { name: 'amy', age: 21 },
+      { name: 'cat', age: 18 },
+      { name: 'bob', age: 2 },
+    ])
+  })
+})
