@@ -1,4 +1,4 @@
-import { max, chain } from '../src/iterable-fns'
+import { max } from '../src/iterable-fns'
 
 test('finds max', () => {
   expect(
