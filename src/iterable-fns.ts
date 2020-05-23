@@ -510,9 +510,7 @@ export function count<T>(source: Iterable<T>): number {
  * @example
  * length(init(5)) // Returns: 5
  */
-export function length<T>(source: Iterable<T>): number {
-  return count(source)
-}
+export const length = count
 
 /**
  * Yields an iterable ordered by the selected key.
@@ -843,7 +841,7 @@ export class ChainableIterable<T> implements Iterable<T> {
    * // Returns: [0, 1, 2]
    */
   toArray(): T[] {
-    return toArray(this.source)
+    return Array.from(this.source)
   }
 
   /**
