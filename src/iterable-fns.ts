@@ -1,6 +1,14 @@
 /**
  * Creates an array from the source iterable object.
  * @param source An Iterable objext to convert to an array.
+ * @alias Array.from
+ * @example
+ * function* source() {
+ *   yield 1
+ *   yield 2
+ * }
+ * toArray(source())
+ * // Returns: [1, 2]
  */
 export function toArray<T>(source: Iterable<T>): T[] {
   return Array.from(source)
@@ -10,6 +18,11 @@ export function toArray<T>(source: Iterable<T>): T[] {
  * Creates a new iterable whose elements are the results of applying the specified mapping to each of the elements of the source collection.
  * @param source The input collection.
  * @param mapping A function to transform items from the input collection.
+ * @example
+ * map(
+ *   init({ start: 1, count: 3 }),
+ *   (x) => x * 2
+ * ) // Yields: 2, 4, 6
  */
 export function* map<T, U>(
   source: Iterable<T>,
@@ -26,6 +39,11 @@ export function* map<T, U>(
  * Returns a new iterable containing only the elements of the collection for which the given predicate returns true.
  * @param source The input collection.
  * @param predicate A function to test whether each item in the input collection should be included in the output.
+ * @example
+ * filter(
+ *   init({ start: 1, count: 4 }),
+ *   (x) => x % 2 === 0
+ * ) // Yields: 2, 4
  */
 export function* filter<T>(
   source: Iterable<T>,
@@ -42,8 +60,14 @@ export function* filter<T>(
 
 /**
  * Applies the given function to each element of the sequence and returns a new sequence comprised of the results for each element where the function returns a value.
+ * This can be thought of as doing both a filter and a map at the same time.
  * @param source The input collection.
  * @param chooser A function to transform items from the input collection to a new value to be included, or undefined to be excluded.
+ * @example
+ * choose(
+ *   init({ start: 1, count: 3 }),
+ *   (x) => (x % 2 === 1 ? x * 2 : undefined)
+ * ) // Yields: 2, 6
  */
 export function* choose<T, U>(
   source: Iterable<T>,
@@ -63,6 +87,20 @@ export function* choose<T, U>(
  * Applies the given function to each element of the source iterable and concatenates all the results.
  * @param source The input collection.
  * @param mapping A function to transform elements of the input collection into collections that are concatenated.
+ * @example
+ * collect(
+ *   init({ start: 1, count: 3 }),
+ *   function* (x) {
+ *     yield x
+ *     yield x
+ *   }
+ * ) // Yields: 1, 1, 2, 2, 3, 3
+ *
+ * // You can also just return an array from your mapping function
+ * collect(
+ *   init({ start: 1, count: 3 }),
+ *   (x) => [x, x]
+ * )
  */
 export function* collect<T, U>(
   source: Iterable<T>,
@@ -82,6 +120,11 @@ export function* collect<T, U>(
  * Wraps the two given iterables as a single concatenated iterable.
  * @param first The first iterable.
  * @param second The second iterable.
+ * @example
+ * append(
+ *   init({ from: 1, to: 3 }),
+ *   init({ from: 8, to: 10 })
+ * ) // Yields: 1, 2, 3, 8, 9, 10
  */
 export function* append<T>(first: Iterable<T>, second: Iterable<T>): Iterable<T> {
   for (const item of first) {
@@ -95,6 +138,12 @@ export function* append<T>(first: Iterable<T>, second: Iterable<T>): Iterable<T>
 /**
  * Combines the given collection-of-iterables as a single concatenated iterable.
  * @param sources The input collection.
+ * @example
+ * concat([
+ *   init({ from: 1, to: 2 }),
+ *   init({ from: 4, to: 5 }),
+ *   init({ from: 8, to: 9 })
+ * ]) // Yields 1, 2, 4, 5, 8, 9
  */
 export function* concat<T>(sources: Iterable<Iterable<T>>): Iterable<T> {
   for (const source of sources) {
@@ -109,6 +158,15 @@ export function* concat<T>(sources: Iterable<Iterable<T>>): Iterable<T> {
  * the elements. If an element occurs multiple times in the sequence then the later occurrences are
  * discarded.
  * @param source The input collection.
+ * @example
+ * function* source() {
+ *   yield 'bob'
+ *   yield 'cat'
+ *   yield 'bob'
+ *   yield 'amy'
+ * }
+ * distinct(source())
+ * // Yields: 'bob', 'cat', 'amy'
  */
 export function* distinct<T>(source: Iterable<T>): Iterable<T> {
   const seen = new Set<T>()
@@ -128,6 +186,18 @@ export function* distinct<T>(source: Iterable<T>): Iterable<T> {
  * the sequence then the later occurrences are discarded.
  * @param source The input collection.
  * @param selector A function that transforms the collection items into comparable keys.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', id: 1 }
+ *   yield { name: 'bob', id: 2 }
+ *   yield { name: 'bob', id: 3 }
+ *   yield { name: 'cat', id: 3 }
+ * }
+ * distinctBy(source(), (x) => x.name)
+ * // Yields:
+ * // { name: 'amy', id: 1 }
+ * // { name: 'bob', id: 2 }
+ * // { name: 'cat', id: 3 }
  */
 export function* distinctBy<T, Key>(
   source: Iterable<T>,
@@ -149,6 +219,9 @@ export function* distinctBy<T, Key>(
  * Tests if any element of the collection satisfies the given predicate.
  * @param source The input collection.
  * @param predicate A function to test each item of the input collection.
+ * @example
+ * exists(init({ from: 1, to: 3 }), (x) => x === 2) // Returns: true
+ * exists(init({ from: 1, to: 3 }), (x) => x === 4) // Returns: false
  */
 export function exists<T>(
   source: Iterable<T>,
@@ -168,6 +241,9 @@ export function exists<T>(
  * Tests if every element of the collection satisfies the given predicate.
  * @param source The input collection.
  * @param predicate A function to test against each item of the input collection.
+ * @example
+ * every(init({ from: 1, to: 3 }), (x) => x > 0) // Returns: true
+ * every(init({ from: 1, to: 3 }), (x) => x < 2) // Returns: false
  */
 export function every<T>(
   source: Iterable<T>,
@@ -188,6 +264,13 @@ export function every<T>(
  * @param source The input collection.
  * @param predicate A function to test whether an item in the collection should be returned.
  * @throws If no item is found matching the criteria of the predicate.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', id: 1 }
+ *   yield { name: 'bob', id: 2 }
+ * }
+ * get(source(), (p) => p.name === 'bob') // Returns: { name: 'bob', id: 2 }
+ * get(source(), (p) => p.name === 'cat') // Throws: Element not found matching criteria
  */
 export function get<T>(source: Iterable<T>, predicate: (item: T, index: number) => boolean): T {
   let index = 0
@@ -204,6 +287,13 @@ export function get<T>(source: Iterable<T>, predicate: (item: T, index: number) 
  * Returns the first element for which the given function returns true, otherwise undefined.
  * @param source The input collection.
  * @param predicate A function to test whether an item in the collection should be returned.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', id: 1 }
+ *   yield { name: 'bob', id: 2 }
+ * }
+ * find(source(), (p) => p.name === 'bob') // Returns: { name: 'bob', id: 2 }
+ * find(source(), (p) => p.name === 'cat') // Returns: undefined
  */
 export function find<T>(
   source: Iterable<T>,
@@ -222,8 +312,20 @@ export function find<T>(
 /**
  * Applies a key-generating function to each element of a collection and yields a iterable of unique
  * keys and an array of all elements that have each key.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
  * @param selector A function that transforms an element of the collection into a comparable key.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', age: 1 }
+ *   yield { name: 'bob', age: 2 }
+ *   yield { name: 'cat', age: 2 }
+ * }
+ * groupBy(source(), (x) => x.age)
+ * // Yields:
+ * // [1, [{ name: 'amy', age: 1 }]]
+ * // [2, [{ name: 'bob', age: 2 }, { name: 'cat', age: 2 }]]
  */
 export function groupBy<T, Key>(
   source: Iterable<T>,
@@ -248,6 +350,9 @@ export function groupBy<T, Key>(
  * Returns an interable of each element in the input sequence and its predecessor,
  * with the exception of the first element which is only returned as the predecessor of the second element.
  * @param source The input collection
+ * @example
+ * pairwise(init({ from: 1, to: 4 }))
+ * // Yields: [1, 2], [2, 3], [3, 4]
  */
 export function* pairwise<T>(source: Iterable<T>): Iterable<[T, T]> {
   let prev: T | undefined = undefined
@@ -279,6 +384,10 @@ export interface InitCount {
  * @param options The sequence of numbers to generate.
  * @throws When the options would result in a sequence that would not complete. If this is the
  * desired behaviour, use initInfinite.
+ * @example
+ * initRaw(3) // Yields: 0, 1, 2
+ * initRaw({ from: 2, to: 5 }) // Yields: 2, 3, 4, 5
+ * initRaw({ from: 0, to: 100, increment: 25 }) // Yields: 0, 25, 50, 75, 100
  */
 export function* initRaw(options: number | InitRange | InitCount): Iterable<number> {
   function normaliseOptions() {
@@ -324,6 +433,10 @@ export function* initRaw(options: number | InitRange | InitCount): Iterable<numb
 /**
  * Generates a new iterable which, when iterated, will return the specified number sequence.
  * @param options The sequence of numbers to generate.
+ * @example
+ * initInfiniteRaw() // Yields: 0, 1, 2, ...
+ * initInfiniteRaw({ start: 99 }) // Yields: 99, 100, 101 ...
+ * initInfiniteRaw({ start: 1, increment: -0.5 }) // Yields: 1, 0.5, 0, -0.5, -1, ...
  */
 export function* initInfiniteRaw(options?: {
   start?: number
@@ -340,6 +453,9 @@ export function* initInfiniteRaw(options?: {
  * Returns the elements of the iterable after a specified count.
  * @param source The input collection.
  * @param count The number of items to skip.
+ * @example
+ * skip(init({ from: 1, to: 5}), 2)
+ * // Yields: 3, 4, 5
  */
 export function* skip<T>(source: Iterable<T>, count: number): Iterable<T> {
   let i = 0
@@ -356,6 +472,9 @@ export function* skip<T>(source: Iterable<T>, count: number): Iterable<T> {
  * Returns the elements of the iterable up to a specified count.
  * @param source The input collection.
  * @param count The number of items to take.
+ * @example
+ * take(init({ from: 1, to: 4 }), 2)
+ * // Yields: 1, 2
  */
 export function* take<T>(source: Iterable<T>, count: number): Iterable<T> {
   let i = 0
@@ -372,6 +491,9 @@ export function* take<T>(source: Iterable<T>, count: number): Iterable<T> {
 /**
  * Returns the number of items in the collection.
  * @param source The input collection.
+ * @example
+ * count(init(5))
+ * // Returns: 5
  */
 export function count<T>(source: Iterable<T>): number {
   let length = 0
@@ -384,6 +506,9 @@ export function count<T>(source: Iterable<T>): number {
 /**
  * Returns the number of items in the collection.
  * @param source The input collection.
+ * @alias count
+ * @example
+ * length(init(5)) // Returns: 5
  */
 export function length<T>(source: Iterable<T>): number {
   return count(source)
@@ -392,8 +517,21 @@ export function length<T>(source: Iterable<T>): number {
 /**
  * Yields an iterable ordered by the selected key.
  * If no selector is specified, the elements will be compared directly.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
  * @param selector An optional function to transform items of the input sequence into comparable keys.
+ * @example
+ * sort(init({ from 3, to: 1 }))
+ * // Yields 1, 2, 3
+ *
+ * function* source() {
+ *   yield 'Cat'
+ *   yield 'amy'
+ *   yield 'BOB'
+ * }
+ * sort(source(), (n) => n.toLowerCase())
+ * // Yields: 'amy', 'BOB', 'Cat'
  */
 export function sort<T, Key>(source: Iterable<T>, selector?: (item: T) => Key): Iterable<T> {
   const theSelector = selector === undefined ? (x: T) => x : selector
@@ -407,8 +545,21 @@ export function sort<T, Key>(source: Iterable<T>, selector?: (item: T) => Key): 
 /**
  * Yields an iterable ordered by the selected key descending.
  * If no selector is specified, the elements will be compared directly.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
  * @param selector An optional function to transform items of the input sequence into comparable keys.
+ * @example
+ * sortDescending(init({ from 1, to: 3 }))
+ * // Yields 3, 2, 1
+ *
+ * function* source() {
+ *   yield 'Cat'
+ *   yield 'amy'
+ *   yield 'BOB'
+ * }
+ * sortDescending(source(), (n) => n.toLowerCase())
+ * // Yields: 'Cat', 'BOB', 'amy'
  */
 export function sortDescending<T, Key>(
   source: Iterable<T>,
@@ -424,8 +575,18 @@ export function sortDescending<T, Key>(
 
 /**
  * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
  * @param selector A function to transform items of the input sequence into comparable keys.
+ * @example
+ * function* source() {
+ *   yield 'Cat'
+ *   yield 'amy'
+ *   yield 'BOB'
+ * }
+ * sortBy(source(), (n) => n.toLowerCase())
+ * // Yields: 'amy', 'BOB', 'Cat'
  */
 export function sortBy<T, Key>(source: Iterable<T>, selector: (item: T) => Key): Iterable<T> {
   const copy = Array.from(source)
@@ -437,8 +598,18 @@ export function sortBy<T, Key>(source: Iterable<T>, selector: (item: T) => Key):
 
 /**
  * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys, descending.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
  * @param selector A function to transform items of the input sequence into comparable keys.
+ * @example
+ * function* source() {
+ *   yield 'Cat'
+ *   yield 'amy'
+ *   yield 'BOB'
+ * }
+ * sortByDescending(source(), (n) => n.toLowerCase())
+ * // Yields: 'Cat', 'BOB', 'amy'
  */
 export function sortByDescending<T, Key>(
   source: Iterable<T>,
@@ -453,7 +624,17 @@ export function sortByDescending<T, Key>(
 
 /**
  * Yields each element of the iterable in reverse order.
+ *
+ * NOTE: Requires complete iteration of source before yielding first element.
  * @param source The input collection.
+ * @example
+ * function* source() {
+ *   yield 'cat'
+ *   yield 'amy'
+ *   yield 'bob'
+ * }
+ * reverse(source())
+ * // Yields: 'bob', 'amy', 'cat'
  */
 export function* reverse<T>(source: Iterable<T>): Iterable<T> {
   const asArray = Array.from(source)
@@ -465,6 +646,9 @@ export function* reverse<T>(source: Iterable<T>): Iterable<T> {
 /**
  * Returns the sum of the values in the collection.
  * @param source The input collection.
+ * @example
+ * sum(init({ from: 5, to: 10 }))
+ * // Returns: 45
  */
 export function sum(source: Iterable<number>): number {
   let sum = 0
@@ -478,6 +662,14 @@ export function sum(source: Iterable<number>): number {
  * Returns the sum of the values returned by the selector for each element in the collection.
  * @param source The input collection.
  * @param selector A function to transform each element into a summable value.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', age: 21 }
+ *   yield { name: 'bob', age: 2 }
+ *   yield { name: 'cat', age: 18 }
+ * }
+ * sumBy(source(), (x) => x.age)
+ * // Returns: 41
  */
 export function sumBy<T>(source: Iterable<T>, selector: (item: T) => number): number {
   let sum = 0
@@ -491,6 +683,9 @@ export function sumBy<T>(source: Iterable<T>, selector: (item: T) => number): nu
  * Returns the maximum of the values in the collection.
  * @param source The input collection.
  * @throws If the collection is empty.
+ * @example
+ * max(init({ from: 5, to: 10 }))
+ * // Returns: 10
  */
 export function max(source: Iterable<number>): number {
   let max: number | null = null
@@ -510,6 +705,14 @@ export function max(source: Iterable<number>): number {
  * @param source The input collection.
  * @param selector A function to transform each element into a comparable value.
  * @throws If the collection is empty.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', age: 21 }
+ *   yield { name: 'bob', age: 2 }
+ *   yield { name: 'cat', age: 18 }
+ * }
+ * maxBy(source(), (x) => x.age)
+ * // Returns: 21
  */
 export function maxBy<T>(source: Iterable<T>, selector: (item: T) => number): number {
   let max: number | null = null
@@ -529,6 +732,9 @@ export function maxBy<T>(source: Iterable<T>, selector: (item: T) => number): nu
  * Returns the minimum of the values in the collection.
  * @param source The input collection.
  * @throws If the collection is empty.
+ * @example
+ * min(init({ from: 5, to: 10 }))
+ * // Returns: 5
  */
 export function min(source: Iterable<number>): number {
   let min: number | null = null
@@ -548,6 +754,14 @@ export function min(source: Iterable<number>): number {
  * @param source The input collection.
  * @param selector A function to transform each element into a comparable value.
  * @throws If the collection is empty.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', age: 21 }
+ *   yield { name: 'bob', age: 2 }
+ *   yield { name: 'cat', age: 18 }
+ * }
+ * minBy(source(), (x) => x.age)
+ * // Returns: 2
  */
 export function minBy<T>(source: Iterable<T>, selector: (item: T) => number): number {
   let min: number | null = null
@@ -567,6 +781,9 @@ export function minBy<T>(source: Iterable<T>, selector: (item: T) => number): nu
  * Returns the mean (average) of the values in the collection.
  * @param source The input collection.
  * @throws If the collection is empty.
+ * @example
+ * mean(init({ from: 5, to: 10 }))
+ * // Returns: 7.5
  */
 export function mean(source: Iterable<number>): number {
   let sum = 0
@@ -586,6 +803,15 @@ export function mean(source: Iterable<number>): number {
  * @param source The input collection.
  * @param selector A function to transform each element into a summable value.
  * @throws If the collection is empty.
+ * @example
+ * function* source() {
+ *   yield { name: 'amy', age: 21 }
+ *   yield { name: 'bob', age: 2 }
+ *   yield { name: 'cat', age: 18 }
+ *   yield { name: 'dot', age: 39 }
+ * }
+ * meanBy(source(), (x) => x.age)
+ * // Returns: 20
  */
 export function meanBy<T>(source: Iterable<T>, selector: (item: T) => number): number {
   let sum = 0
@@ -612,6 +838,9 @@ export class ChainableIterable<T> implements Iterable<T> {
 
   /**
    * Creates an array from the source iterable object.
+   * @example
+   * init(3).toArray()
+   * // Returns: [0, 1, 2]
    */
   toArray(): T[] {
     return toArray(this.source)
@@ -620,6 +849,10 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Creates a new iterable whose elements are the results of applying the specified mapping to each of the elements of the source collection.
    * @param mapping A function to transform items from the input collection.
+   * @example
+   * init({ start: 1, count: 3 })
+   *   .map((x) => x * 2)
+   * // Yields: 2, 4, 6
    */
   map<U>(mapping: (item: T, index: number) => U): ChainableIterable<U> {
     return new ChainableIterable(map(this.source, mapping))
@@ -628,6 +861,10 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns a new iterable containing only the elements of the collection for which the given predicate returns true.
    * @param predicate A function to test whether each item in the input collection should be included in the output.
+   * @example
+   * init({ start: 1, count: 4 })
+   *   .filter((x) => x % 2 === 0)
+   * // Yields: 2, 4
    */
   filter(predicate: (item: T, index: number) => boolean): ChainableIterable<T> {
     return new ChainableIterable(filter(this.source, predicate))
@@ -635,7 +872,12 @@ export class ChainableIterable<T> implements Iterable<T> {
 
   /**
    * Applies the given function to each element of the sequence and returns a new sequence comprised of the results for each element where the function returns a value.
+   * This can be thought of as doing both a filter and a map at the same time.
    * @param chooser A function to transform items from the input collection to a new value to be included, or undefined to be excluded.
+   * @example
+   * init({ start: 1, count: 3 })
+   *   .choose((x) => (x % 2 === 1 ? x * 2 : undefined))
+   * // Yields: 2, 6
    */
   choose<U>(chooser: (item: T, index: number) => U | undefined): ChainableIterable<U> {
     return new ChainableIterable(choose(this.source, chooser))
@@ -644,6 +886,14 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Applies the given function to each element of the source iterable and concatenates all the results.
    * @param mapping A function to transform elements of the input collection into collections that are concatenated.
+   * @example
+   * init({ start: 1, count: 3 }).collect(function* (x) {
+   *   yield x
+   *   yield x
+   * }) // Yields: 1, 1, 2, 2, 3, 3
+   * // You can also just return an array from your mapping function
+   * init({ start: 1, count: 3 })
+   *   .collect((x) => [x, x])
    */
   collect<U>(mapping: (item: T, index: number) => Iterable<U>): ChainableIterable<U> {
     return new ChainableIterable(collect(this.source, mapping))
@@ -652,6 +902,10 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Wraps the two given iterables as a single concatenated iterable.
    * @param second The second iterable.
+   * @example
+   * init({ from: 1, to: 3 })
+   *   .append(init({ from: 8, to: 10 }))
+   * // Yields: 1, 2, 3, 8, 9, 10
    */
   append(second: Iterable<T>): ChainableIterable<T> {
     return new ChainableIterable(append(this.source, second))
@@ -661,6 +915,15 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Returns a iterable that contains no duplicate entries according to the equality comparisons on
    * the elements. If an element occurs multiple times in the sequence then the later occurrences are
    * discarded.
+   * @example
+   * function* source() {
+   *   yield 'bob'
+   *   yield 'cat'
+   *   yield 'bob'
+   *   yield 'amy'
+   * }
+   * chain(source()).distinct()
+   * // Yields: 'bob', 'cat', 'amy'
    */
   distinct(): ChainableIterable<T> {
     return new ChainableIterable(distinct(this.source))
@@ -671,6 +934,18 @@ export class ChainableIterable<T> implements Iterable<T> {
    * the keys returned by the given key-generating function. If an element occurs multiple times in
    * the sequence then the later occurrences are discarded.
    * @param selector A function that transforms the collection items into comparable keys.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', id: 1 }
+   *   yield { name: 'bob', id: 2 }
+   *   yield { name: 'bob', id: 3 }
+   *   yield { name: 'cat', id: 3 }
+   * }
+   * chain(source()).distinctBy((x) => x.name)
+   * // Yields:
+   * // { name: 'amy', id: 1 }
+   * // { name: 'bob', id: 2 }
+   * // { name: 'cat', id: 3 }
    */
   distinctBy<Key>(selector: (item: T, index: number) => Key): ChainableIterable<T> {
     return new ChainableIterable(distinctBy(this.source, selector))
@@ -679,6 +954,9 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Tests if any element of the collection satisfies the given predicate.
    * @param predicate A function to test each item of the input collection.
+   * @example
+   * init({ from: 1, to: 3 }).exists((x) => x === 2) // Returns: true
+   * init({ from: 1, to: 3 }).exists((x) => x === 4) // Returns: false
    */
   exists(predicate: (item: T, index: number) => boolean): boolean {
     return exists(this.source, predicate)
@@ -687,6 +965,9 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Tests if every element of the collection satisfies the given predicate.
    * @param predicate A function to test against each item of the input collection.
+   * @example
+   * init({ from: 1, to: 3 }).every((x) => x > 0) // Returns: true
+   * init({ from: 1, to: 3 }).every((x) => x < 2) // Returns: false
    */
   every(predicate: (item: T, index: number) => boolean): boolean {
     return every(this.source, predicate)
@@ -696,6 +977,13 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Returns the first element for which the given function returns true.
    * @param predicate A function to test whether an item in the collection should be returned.
    * @throws If no item is found matching the criteria of the predicate.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', id: 1 }
+   *   yield { name: 'bob', id: 2 }
+   * }
+   * chain(source()).get((p) => p.name === 'bob') // Returns: { name: 'bob', id: 2 }
+   * chain(source()).get((p) => p.name === 'cat') // Throws: Element not found matching criteria
    */
   get(predicate: (item: T, index: number) => boolean): T {
     return get(this.source, predicate)
@@ -704,6 +992,13 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns the first element for which the given function returns true, otherwise undefined.
    * @param predicate A function to test whether an item in the collection should be returned.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', id: 1 }
+   *   yield { name: 'bob', id: 2 }
+   * }
+   * chain(source()).find((p) => p.name === 'bob') // Returns: { name: 'bob', id: 2 }
+   * chain(source()).find((p) => p.name === 'cat') // Returns: undefined
    */
   find(predicate: (item: T, index: number) => boolean): T | undefined {
     return find(this.source, predicate)
@@ -713,6 +1008,16 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Applies a key-generating function to each element of a collection and yields a iterable of unique
    * keys and an array of all elements that have each key.
    * @param selector A function that transforms an element of the collection into a comparable key.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', age: 1 }
+   *   yield { name: 'bob', age: 2 }
+   *   yield { name: 'cat', age: 2 }
+   * }
+   * chain(source()).groupBy((x) => x.age)
+   * // Yields:
+   * // [1, [{ name: 'amy', age: 1 }]]
+   * // [2, [{ name: 'bob', age: 2 }, { name: 'cat', age: 2 }]]
    */
   groupBy<Key>(selector: (item: T, index: number) => Key): ChainableIterable<[Key, Iterable<T>]> {
     return new ChainableIterable(groupBy(this.source, selector))
@@ -721,6 +1026,9 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns an interable of each element in the input sequence and its predecessor,
    * with the exception of the first element which is only returned as the predecessor of the second element.
+   * @example
+   * init({ from: 1, to: 4 }).pairwise()
+   * // Yields: [1, 2], [2, 3], [3, 4]
    */
   pairwise(): ChainableIterable<[T, T]> {
     return new ChainableIterable(pairwise(this.source))
@@ -729,6 +1037,9 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns the elements of the iterable after a specified count.
    * @param count The number of items to skip.
+   * @example
+   * init({ from: 1, to: 5}).skip(2)
+   * // Yields: 3, 4, 5
    */
   skip(count: number): ChainableIterable<T> {
     return new ChainableIterable(skip(this.source, count))
@@ -737,6 +1048,9 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns the elements of the iterable up to a specified count.
    * @param count The number of items to take.
+   * @example
+   * init({ from: 1, to: 4 }).take(2)
+   * // Yields: 1, 2
    */
   take(count: number): ChainableIterable<T> {
     return new ChainableIterable(take(this.source, count))
@@ -744,6 +1058,9 @@ export class ChainableIterable<T> implements Iterable<T> {
 
   /**
    * Returns the number of items in the collection.
+   * @example
+   * init(5).count()
+   * // Returns: 5
    */
   count(): number {
     return count(this.source)
@@ -751,6 +1068,9 @@ export class ChainableIterable<T> implements Iterable<T> {
 
   /**
    * Returns the number of items in the collection.
+   * @example
+   * init(5).length()
+   * // Returns: 5
    */
   length(): number {
     return count(this.source)
@@ -760,6 +1080,17 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Yields an iterable ordered by the selected key.
    * If no selector is specified, the elements will be compared directly.
    * @param selector An optional function to transform items of the input sequence into comparable keys.
+   * @example
+   * init({ from 3, to: 1 }).sort()
+   * // Yields 1, 2, 3
+   *
+   * function* source() {
+   *   yield 'Cat'
+   *   yield 'amy'
+   *   yield 'BOB'
+   * }
+   * chain(source()).sort((n) => n.toLowerCase())
+   * // Yields: 'amy', 'BOB', 'Cat'
    */
   sort<Key>(selector?: (item: T) => Key): ChainableIterable<T> {
     return new ChainableIterable(sort(this.source, selector))
@@ -768,6 +1099,14 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys.
    * @param selector A function to transform items of the input sequence into comparable keys.
+   * @example
+   * function* source() {
+   *   yield 'Cat'
+   *   yield 'amy'
+   *   yield 'BOB'
+   * }
+   * chain(source()).sortBy((n) => n.toLowerCase())
+   * // Yields: 'amy', 'BOB', 'Cat'
    */
   sortBy<Key>(selector: (item: T) => Key): ChainableIterable<T> {
     return new ChainableIterable(sortBy(this.source, selector))
@@ -777,6 +1116,17 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Yields an iterable ordered by the selected key descending.
    * If no selector is specified, the elements will be compared directly.
    * @param selector An optional function to transform items of the input sequence into comparable keys.
+   * @example
+   * init({ from 1, to: 3 }).sortDescending()
+   * // Yields 3, 2, 1
+   *
+   * function* source() {
+   *   yield 'Cat'
+   *   yield 'amy'
+   *   yield 'BOB'
+   * }
+   * chain(source()).sortDescending((n) => n.toLowerCase())
+   * // Yields: 'Cat', 'BOB', 'amy'
    */
   sortDescending<Key>(selector?: (item: T) => Key): ChainableIterable<T> {
     return new ChainableIterable(sortDescending(this.source, selector))
@@ -785,6 +1135,14 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Applies a key-generating function to each element of the collection and yields an iterable ordered by keys, descending.
    * @param selector A function to transform items of the input sequence into comparable keys.
+   * @example
+   * function* source() {
+   *   yield 'Cat'
+   *   yield 'amy'
+   *   yield 'BOB'
+   * }
+   * chain(source()).sortByDescending((n) => n.toLowerCase())
+   * // Yields: 'Cat', 'BOB', 'amy'
    */
   sortByDescending<Key>(selector: (item: T) => Key): ChainableIterable<T> {
     return new ChainableIterable(sortByDescending(this.source, selector))
@@ -792,6 +1150,14 @@ export class ChainableIterable<T> implements Iterable<T> {
 
   /**
    * Yields each element of the iterable in reverse order.
+   * @example
+   * function* source() {
+   *   yield 'cat'
+   *   yield 'amy'
+   *   yield 'bob'
+   * }
+   * chain(source()).reverse()
+   * // Yields: 'bob', 'amy', 'cat'
    */
   reverse(): ChainableIterable<T> {
     return new ChainableIterable(reverse(this.source))
@@ -800,6 +1166,14 @@ export class ChainableIterable<T> implements Iterable<T> {
   /**
    * Returns the sum of the values returned by the selector for each element in the collection.
    * @param selector A function to transform each element into a summable value.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', age: 21 }
+   *   yield { name: 'bob', age: 2 }
+   *   yield { name: 'cat', age: 18 }
+   * }
+   * chain(source()).sumBy((x) => x.age)
+   * // Returns: 41
    */
   sumBy(selector: (item: T) => number): number {
     return sumBy(this.source, selector)
@@ -809,6 +1183,14 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Returns the maximum of the values returned by the selector for each element in the collection.
    * @param selector A function to transform each element into a comparable value.
    * @throws If the collection is empty.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', age: 21 }
+   *   yield { name: 'bob', age: 2 }
+   *   yield { name: 'cat', age: 18 }
+   * }
+   * chain(source()).maxBy((x) => x.age)
+   * // Returns: 21
    */
   maxBy(selector: (item: T) => number): number {
     return maxBy(this.source, selector)
@@ -818,6 +1200,14 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Returns the minimum of the values returned by the selector for each element in the collection.
    * @param selector A function to transform each element into a comparable value.
    * @throws If the collection is empty.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', age: 21 }
+   *   yield { name: 'bob', age: 2 }
+   *   yield { name: 'cat', age: 18 }
+   * }
+   * chain(source()).minBy((x) => x.age)
+   * // Returns: 2
    */
   minBy(selector: (item: T) => number): number {
     return minBy(this.source, selector)
@@ -827,6 +1217,15 @@ export class ChainableIterable<T> implements Iterable<T> {
    * Returns the mean (average) of the values returned by the selector for each element in the collection.
    * @param selector A function to transform each element into a summable value.
    * @throws If the collection is empty.
+   * @example
+   * function* source() {
+   *   yield { name: 'amy', age: 21 }
+   *   yield { name: 'bob', age: 2 }
+   *   yield { name: 'cat', age: 18 }
+   *   yield { name: 'dot', age: 39 }
+   * }
+   * chain(source()).meanBy((x) => x.age)
+   * // Returns: 20
    */
   meanBy(selector: (item: T) => number): number {
     return meanBy(this.source, selector)
@@ -834,18 +1233,28 @@ export class ChainableIterable<T> implements Iterable<T> {
 }
 
 /**
- * Generates a new iterable which, when iterated, will return the specified number sequence.
+ * Generates a new chainable iterable which, when iterated, will return the specified number sequence.
  * @param options The sequence of numbers to generate.
  * @throws When the options would result in a sequence that would not complete. If this is the
  * desired behaviour, use initInfinite.
+ * @example
+ * init(3) // Yields: 0, 1, 2
+ * init({ from: 2, to: 5 }) // Yields: 2, 3, 4, 5
+ * init({ from: 0, to: 100, increment: 25 })
+ * // Yields: 0, 25, 50, 75, 100
  */
 export function init(options: number | InitRange | InitCount): ChainableIterable<number> {
   return new ChainableIterable(initRaw(options))
 }
 
 /**
- * Generates a new iterable which, when iterated, will return the specified number sequence.
+ * Generates a new chainable iterable which, when iterated, will return the specified number sequence.
  * @param options The sequence of numbers to generate.
+ * @example
+ * initInfinite() // Yields: 0, 1, 2, ...
+ * initInfinite({ start: 99 }) // Yields: 99, 100, 101 ...
+ * initInfinite({ start: 1, increment: -0.5 })
+ * // Yields: 1, 0.5, 0, -0.5, -1, ...
  */
 export function initInfinite(options?: {
   start?: number
@@ -854,6 +1263,21 @@ export function initInfinite(options?: {
   return new ChainableIterable(initInfiniteRaw(options))
 }
 
+/**
+ * Create a new chainable iterator from an existing iterable source.
+ * @param source The input collection.
+ * @example
+ * function* source() {
+ *   yield { name: 'CAT', age: 18 }
+ *   yield { name: 'Amy', age: 21 }
+ *   yield { name: 'bob', age: 2 }
+ * }
+ * chain(source())
+ *   .filter((x) => x.age >= 18)
+ *   .map((x) => x.name)
+ *   .sortBy((x) => x.toLowerCase())
+ *   .toArray()
+ */
 export function chain<T>(source: Iterable<T>): ChainableIterable<T> {
   return new ChainableIterable(source)
 }
