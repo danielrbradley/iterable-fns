@@ -228,7 +228,7 @@ export function find<T>(
 export function groupBy<T, Key>(
   source: Iterable<T>,
   selector: (item: T, index: number) => Key
-): Iterable<[Key, Iterable<T>]> {
+): Map<Key, T[]> {
   const groups = new Map<Key, T[]>()
   let index = 0
   for (const item of source) {
@@ -241,7 +241,7 @@ export function groupBy<T, Key>(
     }
     index++
   }
-  return groups.entries()
+  return groups
 }
 
 /**
