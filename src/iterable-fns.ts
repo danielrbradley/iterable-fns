@@ -110,9 +110,16 @@ export function* concat<T>(sources: Iterable<Iterable<T>>): Iterable<T> {
  * discarded.
  * @param source The input collection.
  */
-export function distinct<T>(source: Iterable<T>): Iterable<T> {
-  const asSet = new Set<T>(source)
-  return asSet
+export function* distinct<T>(source: Iterable<T>): Iterable<T> {
+  const seen = new Set<T>()
+  let index = 0
+  for (const item of source) {
+    if (!seen.has(item)) {
+      seen.add(item)
+      yield item
+    }
+    index++
+  }
 }
 
 /**
